@@ -41,9 +41,13 @@ def all_teams_ticker() -> str:
     
     parts = []
     for team in teams:
-        parts.append(team_ticker(team))
+        if team.get("espn_id"):  # Only show teams with ESPN ID
+            parts.append(team_ticker(team))
     
-    return "\n\n" + "─" * 30 + "\n\n".join(parts)
+    if not parts:
+        return "No teams with ESPN IDs configured."
+    
+    return ("\n" + "─" * 30 + "\n").join(parts)
 
 def league_ticker(league: str = "eng.1") -> str:
     """Show all matches in a league."""

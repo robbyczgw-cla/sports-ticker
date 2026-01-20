@@ -9,10 +9,11 @@
       "enabled": true
     },
     {
-      "name": "Grazer AK",
-      "short_name": "GAK",
-      "emoji": "🔴⚫",
-      "thesportsdb_id": "139415",
+      "name": "Real Madrid",
+      "short_name": "Madrid",
+      "emoji": "⚪",
+      "espn_id": "86",
+      "espn_leagues": ["esp.1", "uefa.champions"],
       "enabled": true
     }
   ],
@@ -22,9 +23,5 @@
     "halftime": true,
     "fulltime": true,
     "kickoff": true
-  },
-  "api_keys": {
-    "football_data_org": "",
-    "comment": "ESPN API requires no key! TheSportsDB is also free."
   }
 }

@@ -58,9 +58,13 @@ cd sports-ticker
 python3 scripts/setup.py
 
 # Or find team IDs directly
-python3 scripts/setup.py find "Manchester United"
-python3 scripts/setup.py find "Real Madrid"
+python3 scripts/setup.py find "Tottenham"
+python3 scripts/setup.py find "Barcelona"
 ```
+
+> **Note:** Team search only works if the team has a match in today's scoreboard. For teams without upcoming games, check ESPN directly or use these common IDs:
+> - Tottenham: 367, Arsenal: 359, Liverpool: 364, Man City: 382, Man United: 360
+> - Barcelona: 83, Real Madrid: 86, Bayern: 132, PSG: 160, Juventus: 111
 
 ### 3. Create config.json
 
@@ -73,10 +77,10 @@ Edit `config.json`:
 {
   "teams": [
     {
-      "name": "Manchester United",
-      "short_name": "Man Utd",
+      "name": "Liverpool",
+      "short_name": "Liverpool",
       "emoji": "🔴",
-      "espn_id": "360",
+      "espn_id": "364",
       "espn_leagues": ["eng.1", "uefa.champions"],
       "enabled": true
     }
