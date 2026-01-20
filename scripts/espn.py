@@ -59,28 +59,34 @@ def get_match_details(event_id: str, sport: str = "soccer", league: str = "eng.1
     """Get detailed match info including events."""
     return api_request(f"{sport}/{league}/summary?event={event_id}")
 
+def get_all_teams(league: str = "eng.1") -> list:
+    """Get ALL teams in a league (not just today's matches)."""
+    data = api_request(f"soccer/{league}/teams")
+    teams = data.get("sports", [{}])[0].get("leagues", [{}])[0].get("teams", [])
+    return [t.get("team", {}) for t in teams]
+
 def search_team(team_name: str, leagues: list = None) -> list:
-    """Search for a team across leagues."""
+    """Search for a team across leagues using the teams endpoint."""
     if leagues is None:
-        leagues = ["eng.1", "uefa.champions", "esp.1", "ger.1", "ita.1"]
+        leagues = ["eng.1", "esp.1", "ger.1", "ita.1", "fra.1", "uefa.champions"]
     
     team_lower = team_name.lower()
     results = []
     
     for league in leagues:
         try:
-            data = get_scoreboard("soccer", league)
-            for event in data.get("events", []):
-                for comp in event.get("competitions", []):
-                    for competitor in comp.get("competitors", []):
-                        team = competitor.get("team", {})
-                        if team_lower in team.get("displayName", "").lower():
-                            results.append({
-                                "id": team.get("id"),
-                                "name": team.get("displayName"),
-                                "league": league,
-                                "league_name": FOOTBALL_LEAGUES.get(league, league)
-                            })
+            teams = get_all_teams(league)
+            for team in teams:
+                if team_lower in team.get("displayName", "").lower() or \
+                   team_lower in team.get("shortDisplayName", "").lower() or \
+                   team_lower in team.get("nickname", "").lower():
+                    results.append({
+                        "id": team.get("id"),
+                        "name": team.get("displayName"),
+                        "short": team.get("shortDisplayName"),
+                        "league": league,
+                        "league_name": FOOTBALL_LEAGUES.get(league, league)
+                    })
         except Exception:
             continue
     

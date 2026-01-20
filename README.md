@@ -62,9 +62,9 @@ python3 scripts/setup.py find "Tottenham"
 python3 scripts/setup.py find "Barcelona"
 ```
 
-> **Note:** Team search only works if the team has a match in today's scoreboard. For teams without upcoming games, check ESPN directly or use these common IDs:
-> - Tottenham: 367, Arsenal: 359, Liverpool: 364, Man City: 382, Man United: 360
-> - Barcelona: 83, Real Madrid: 86, Bayern: 132, PSG: 160, Juventus: 111
+Common team IDs for reference:
+- Tottenham: 367, Arsenal: 359, Liverpool: 364, Man City: 382, Man United: 360
+- Barcelona: 83, Real Madrid: 86, Bayern: 132, PSG: 160, Juventus: 111
 
 ### 3. Create config.json
 
@@ -204,6 +204,7 @@ MIT — use it however you want!
 ## 🙏 Credits
 
 - ESPN for their awesome (and free!) API
+- [Public ESPN API Documentation](https://github.com/pseudo-r/Public-ESPN-API) by pseudo-r
 - Built with ❤️ for football fans everywhere
 
 ---
