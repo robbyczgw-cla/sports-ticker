@@ -9,11 +9,11 @@
       "enabled": true
     },
     {
-      "name": "Real Madrid",
-      "short_name": "Madrid",
-      "emoji": "⚪",
-      "espn_id": "86",
-      "espn_leagues": ["esp.1", "uefa.champions"],
+      "name": "Grazer AK",
+      "short_name": "GAK",
+      "emoji": "🔴⚫",
+      "espn_id": "21846",
+      "espn_leagues": ["aut.1"],
       "enabled": true
     }
   ],
