@@ -201,10 +201,19 @@ mex.1          Liga MX
 
 MIT — use it however you want!
 
+## 📚 ESPN API Resources
+
+- [Public ESPN API Documentation](https://github.com/pseudo-r/Public-ESPN-API) — comprehensive endpoint list
+- [ESPN OpenAPI Spec](https://github.com/zuplo/espn-openapi) — formal OpenAPI/Swagger schema
+- [Interactive API Explorer](https://zudoku.dev/demo?api-url=https://raw.githubusercontent.com/zuplo/espn-openapi/refs/heads/main/espn_openapi_soccer_league_path.yaml) — try endpoints in browser
+- [Zuplo Guide](https://zuplo.com/learning-center/espn-hidden-api-guide) — overview & alternatives
+
+> ⚠️ **Note:** ESPN's API is unofficial/undocumented. It's stable and widely used, but could change without notice. The skill handles errors gracefully.
+
 ## 🙏 Credits
 
 - ESPN for their awesome (and free!) API
-- [Public ESPN API Documentation](https://github.com/pseudo-r/Public-ESPN-API) by pseudo-r
+- pseudo-r, zuplo, and the community for API documentation
 - Built with ❤️ for football fans everywhere
 
 ---
