@@ -50,7 +50,7 @@ def interactive_setup():
                             seen.add(key)
                             print(f"  ID: {r['id']:6} | {r['name']:30} | {r['league_name']}")
                 else:
-                    print("No results. Try a different name or check if the league is in today's scoreboard.")
+                    print("No results. Try a different spelling or check the official team name.")
         
         elif choice == "2":
             name = input("Team name: ").strip()
@@ -92,9 +92,9 @@ def find_team_id(team_name: str):
                 print(f"  ESPN ID: {r['id']:6} | {r['name']:30} | {r['league_name']}")
     else:
         print("No teams found. Tips:")
-        print("  - The team must have a match in today's/upcoming scoreboard")
-        print("  - Try the official team name (e.g., 'Tottenham Hotspur' not 'Spurs')")
-        print("  - Check available leagues with: python3 scripts/espn.py leagues")
+        print("  - Try the official team name (e.g., 'Tottenham Hotspur')")
+        print("  - Check available leagues: python3 scripts/espn.py leagues")
+        print("  - Some lower leagues may not be indexed")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
