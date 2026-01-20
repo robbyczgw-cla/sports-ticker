@@ -1,0 +1,30 @@
+{
+  "teams": [
+    {
+      "name": "Tottenham Hotspur",
+      "short_name": "Spurs",
+      "emoji": "🐓",
+      "espn_id": "367",
+      "espn_leagues": ["eng.1", "uefa.champions"],
+      "enabled": true
+    },
+    {
+      "name": "Grazer AK",
+      "short_name": "GAK",
+      "emoji": "🔴⚫",
+      "thesportsdb_id": "139415",
+      "enabled": true
+    }
+  ],
+  "alerts": {
+    "goals": true,
+    "red_cards": true,
+    "halftime": true,
+    "fulltime": true,
+    "kickoff": true
+  },
+  "api_keys": {
+    "football_data_org": "",
+    "comment": "ESPN API requires no key! TheSportsDB is also free."
+  }
+}

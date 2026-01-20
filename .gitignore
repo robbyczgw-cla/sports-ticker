@@ -1,0 +1,14 @@
+# Config with personal teams
+config.json
+
+# State file
+.live_state.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
