@@ -48,7 +48,7 @@ def get_alert_settings() -> dict:
     })
 
 def add_team(name: str, espn_id: str = None, thesportsdb_id: str = None, 
-             leagues: list = None, emoji: str = "⚽", short_name: str = None):
+             leagues: list = None, emoji: str = "⚽", short_name: str = None, sport: str = "soccer"):
     """Add a team to config."""
     config = load_config()
     
@@ -56,12 +56,29 @@ def add_team(name: str, espn_id: str = None, thesportsdb_id: str = None,
         "name": name,
         "short_name": short_name or name.split()[0],
         "emoji": emoji,
+        "sport": sport,
         "enabled": True
     }
     
     if espn_id:
         team["espn_id"] = espn_id
-        team["espn_leagues"] = leagues or ["eng.1", "uefa.champions"]
+        # Default leagues based on sport
+        if leagues:
+            team["espn_leagues"] = leagues
+        elif sport == "soccer":
+            team["espn_leagues"] = ["eng.1", "uefa.champions"]
+        elif sport == "football":
+            team["espn_leagues"] = ["nfl"]
+        elif sport == "basketball":
+            team["espn_leagues"] = ["nba"]
+        elif sport == "hockey":
+            team["espn_leagues"] = ["nhl"]
+        elif sport == "baseball":
+            team["espn_leagues"] = ["mlb"]
+        elif sport == "racing":
+            team["espn_leagues"] = ["f1"]
+        else:
+            team["espn_leagues"] = []
     
     if thesportsdb_id:
         team["thesportsdb_id"] = thesportsdb_id

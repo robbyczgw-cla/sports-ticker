@@ -17,14 +17,15 @@ def team_ticker(team: dict) -> str:
     emoji = team.get("emoji", "⚽")
     espn_id = team.get("espn_id")
     leagues = team.get("espn_leagues", ["eng.1"])
+    sport = team.get("sport", "soccer")  # Default to soccer for backward compatibility
     
     lines.append(f"{emoji} **{name}**\n")
     
     if espn_id:
-        match = find_team_match(espn_id, leagues)
+        match = find_team_match(espn_id, leagues, sport)
         if match:
             lines.append(format_match(match["event"], include_events=True, 
-                                     sport="soccer", league=match["league"]))
+                                     sport=sport, league=match["league"]))
         else:
             lines.append("No upcoming match in scoreboard.")
     else:
@@ -49,18 +50,20 @@ def all_teams_ticker() -> str:
     
     return ("\n" + "─" * 30 + "\n").join(parts)
 
-def league_ticker(league: str = "eng.1") -> str:
+def league_ticker(league: str = "eng.1", sport: str = "soccer") -> str:
     """Show all matches in a league."""
-    lines = [f"**{FOOTBALL_LEAGUES.get(league, league)}**\n"]
+    from espn import LEAGUES
+    sport_leagues = LEAGUES.get(sport, {})
+    lines = [f"**{sport_leagues.get(league, league)}**\n"]
     
-    data = get_scoreboard("soccer", league)
+    data = get_scoreboard(sport, league)
     events = data.get("events", [])
     
     if not events:
         lines.append("No matches in scoreboard.")
     else:
         for event in events:
-            lines.append(format_match(event, include_events=False))
+            lines.append(format_match(event, include_events=False, sport=sport, league=league))
             lines.append("")
     
     return "\n".join(lines)
@@ -74,7 +77,8 @@ if __name__ == "__main__":
         
         if cmd == "league":
             league = sys.argv[2] if len(sys.argv) > 2 else "eng.1"
-            print(league_ticker(league))
+            sport = sys.argv[3] if len(sys.argv) > 3 else "soccer"
+            print(league_ticker(league, sport))
         elif cmd == "all":
             print(all_teams_ticker())
         else:
