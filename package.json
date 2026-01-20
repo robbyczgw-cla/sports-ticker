@@ -1,6 +1,6 @@
 {
   "name": "@clawdbot/sports-ticker",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Live sports alerts with FREE ESPN API. Track soccer, football, basketball, hockey, baseball, F1 and more with real-time scoring, key events, and multi-team support. No API keys required!",
   "keywords": [
     "clawdbot",
@@ -17,7 +17,7 @@
     "alerts",
     "real-time"
   ],
-  "author": "Robby <robby@clawdbot.com>",
+  "author": "Robby <robbyczgw@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
