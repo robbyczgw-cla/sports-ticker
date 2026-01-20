@@ -218,4 +218,4 @@ MIT — use it however you want!
 
 ---
 
-**COYS! ⚽🏆**
+Happy tracking! ⚽🏆
