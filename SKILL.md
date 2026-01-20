@@ -1,6 +1,6 @@
 ---
 name: sports-ticker
-description: Live sports alerts for Soccer, NFL, NBA, NHL, MLB, F1, and more. Get real-time scoring, goals, touchdowns, home runs with FREE ESPN API. Track any team from any major league worldwide.
+description: Live sports alerts for Soccer, NFL, NBA, NHL, MLB, F1 and more. Real-time scoring with FREE ESPN API. Track any team from any major league worldwide.
 ---
 
 # Sports Ticker
