@@ -193,22 +193,72 @@ Kansas City Chiefs 31-24 Buffalo Bills
 
 ## 🤖 Clawdbot Integration
 
-### Auto-Scheduling (Match Day Alerts)
+### Automatic Cron Setup
 
-Create a daily cron job that checks for matches:
+The easiest way to set up match-day alerts is with the setup script:
 
-```javascript
-// Morning check at 9 AM
+```bash
+# Run the setup script with your Telegram ID and timezone
+python3 scripts/setup_crons.py <telegram_id> <timezone>
+
+# Example
+python3 scripts/setup_crons.py 123456789 "Europe/London"
+python3 scripts/setup_crons.py 123456789 "America/New_York"
+
+# Just view the cron configs without creating
+python3 scripts/setup_crons.py --list
+```
+
+This creates 3 cron jobs:
+
+| Cron Job | Schedule | Purpose |
+|----------|----------|---------|
+| `football-match-check` | Daily 9 AM | Checks if your teams play today |
+| `spurs-live-ticker` | Every 2 mins (disabled) | Live updates during matches |
+| `spurs-reminder` | Dynamic (disabled) | 30-min pre-match reminder |
+
+### How Auto-Scheduling Works
+
+1. **Morning check** — `football-match-check` runs at 9 AM daily
+2. **Match found?** — If any team plays today, it:
+   - Updates `spurs-live-ticker` to start 5 mins before kickoff
+   - Sets `spurs-reminder` for 30 mins before kickoff
+   - Enables both crons
+3. **During match** — `spurs-live-ticker` runs every 2 mins, sending goals/cards/events
+4. **No match?** — Both crons stay disabled (no spam!)
+
+### Manual Cron Setup
+
+If you prefer manual setup, here are the cron expressions:
+
+```bash
+# Daily match check at 9 AM
+0 9 * * *    # football-match-check
+
+# Live ticker every 2 minutes (enable only during matches)
+*/2 * * * *  # spurs-live-ticker
+
+# Pre-match reminder (set to 30 mins before kickoff)
+30 14 * * *  # spurs-reminder (example: 2:30 PM for 3 PM kickoff)
+```
+
+### Cron Payload Examples
+
+**Match Check (daily):**
+```json
 {
-  "name": "sports-match-check",
-  "schedule": { "kind": "cron", "expr": "0 9 * * *", "tz": "Europe/London" },
-  "payload": {
-    "message": "Check if any configured teams play today. If yes, create a live ticker cron for the match window."
-  }
+  "message": "Check if any configured teams play today. If a match is found, update spurs-live-ticker to start 5 mins before kickoff and run for 3 hours. Enable spurs-reminder for 30 mins before kickoff."
 }
 ```
 
-### Live Ticker Cron
+**Live Ticker (during matches):**
+```json
+{
+  "message": "Run python3 scripts/live_monitor.py and send any new events (goals, cards, halftime, fulltime). Only message if there are updates."
+}
+```
+
+### Live Monitor Script
 
 During matches, run every 2 minutes:
 ```bash
