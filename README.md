@@ -4,7 +4,7 @@
 
 Track soccer, football, basketball, hockey, baseball, F1, and more!
 
-Built for [Clawdbot](https://clawdbot.com) but works standalone too.
+Built for [Moltbot](https://moltbot.com) but works standalone too.
 
 ## ✨ Features
 
@@ -14,7 +14,7 @@ Built for [Clawdbot](https://clawdbot.com) but works standalone too.
 - ⏸️ **Period updates** — Halftime, quarters, intermissions
 - 🏁 **Final results** with WIN/LOSS/DRAW
 - 📊 **Multi-team support** — track as many teams as you want
-- 🔄 **Auto-scheduling** — cron jobs for match days (Clawdbot)
+- 🔄 **Auto-scheduling** — cron jobs for match days (Moltbot)
 - 💰 **100% FREE** — no API keys, no subscriptions!
 
 ## 🎯 The Secret Sauce: ESPN API
@@ -191,7 +191,7 @@ Oilers 3-2 Maple Leafs
 Kansas City Chiefs 31-24 Buffalo Bills
 ```
 
-## 🤖 Clawdbot Integration
+## 🤖 Moltbot Integration
 
 ### Automatic Cron Setup
 
