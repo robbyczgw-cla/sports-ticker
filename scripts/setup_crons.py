@@ -88,12 +88,12 @@ If no match today, ensure live-ticker and reminder crons are disabled."""
     ]
 
 
-def create_cron_via_moltbot(cron_config: dict) -> bool:
-    """Attempt to create cron via moltbot CLI."""
+def create_cron_via_openclaw(cron_config: dict) -> bool:
+    """Attempt to create cron via openclaw CLI."""
     try:
-        # Try using moltbot cron create
+        # Try using openclaw cron create
         cmd = [
-            "moltbot", "cron", "create",
+            "openclaw", "cron", "create",
             "--name", cron_config["name"],
             "--schedule", json.dumps(cron_config["schedule"]),
             "--channel", json.dumps(cron_config["channel"]),
@@ -113,7 +113,7 @@ def print_manual_instructions(crons: list[dict]):
     print("\n" + "="*60)
     print("📋 MANUAL CRON SETUP INSTRUCTIONS")
     print("="*60)
-    print("\nAsk Claude/Moltbot to create these cron jobs:\n")
+    print("\nAsk Claude/OpenClaw to create these cron jobs:\n")
     
     for cron in crons:
         print(f"\n### {cron['name']}")
@@ -124,7 +124,7 @@ def print_manual_instructions(crons: list[dict]):
         print(f"  {cron['payload']['message'][:200]}...")
         print("-"*40)
     
-    print("\n💡 TIP: Copy-paste this to Moltbot:")
+    print("\n💡 TIP: Copy-paste this to OpenClaw:")
     print("-"*40)
     print(f"""
 Please create these 3 cron jobs for sports-ticker:
@@ -172,13 +172,13 @@ def main():
     
     crons = get_cron_configs(telegram_id, timezone)
     
-    # Try moltbot CLI first
-    print("Attempting to create crons via moltbot CLI...")
+    # Try openclaw CLI first
+    print("Attempting to create crons via openclaw CLI...")
     success_count = 0
     
     for cron in crons:
         print(f"  Creating '{cron['name']}'...", end=" ")
-        if create_cron_via_moltbot(cron):
+        if create_cron_via_openclaw(cron):
             print("✅")
             success_count += 1
         else:
