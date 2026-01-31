@@ -41,7 +41,7 @@ LEAGUES = {
         "fra.1": "Ligue 1",
         "ned.1": "Eredivisie",
         "por.1": "Primeira Liga",
-        "aut.1": "Austrian Bundesliga",
+        "ger.1": "German Bundesliga",
         # European competitions
         "uefa.champions": "Champions League",
         "uefa.europa": "Europa League",
