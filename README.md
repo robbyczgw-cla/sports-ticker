@@ -62,13 +62,34 @@ git clone https://github.com/your-repo/sports-ticker
 cd sports-ticker
 ```
 
-### 2. Configure Your Teams
+### 2. Run the Setup Wizard 🧙‍♂️
+
+First time? The interactive wizard makes setup a breeze!
 
 ```bash
-# Interactive setup
 python3 scripts/setup.py
+```
 
-# Or find team IDs directly
+**The wizard walks you through:**
+1. 📺 **Pick your sports** — Soccer, NFL, NBA, NHL, MLB, F1
+2. 🏆 **Choose your teams** — Popular picks or search any team
+3. 🔔 **Set alert style** — Live scores / Final only / Daily digest
+4. ⏰ **Game-day reminders** — Get notified 30 mins before kick-off
+5. 🌙 **Quiet hours** — No alerts while you sleep
+
+**Example:**
+```
+╔═══════════════════════════════════════════════════════╗
+║   🏆  SPORTS TICKER  🏆                               ║
+║   ⚽ 🏈 🏀 🏒 ⚾ 🏎️                                    ║
+║   Never miss a goal, touchdown, or checkered flag!   ║
+╚═══════════════════════════════════════════════════════╝
+```
+
+### 3. Or Configure Manually
+
+```bash
+# Find team IDs directly
 python3 scripts/setup.py find "Lakers" basketball
 python3 scripts/setup.py find "Chiefs" football
 python3 scripts/setup.py find "Barcelona" soccer

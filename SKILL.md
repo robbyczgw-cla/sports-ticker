@@ -9,12 +9,33 @@ Track your favorite teams across **multiple sports** with **FREE live alerts**!
 
 Supports: ⚽ Soccer • 🏈 NFL • 🏀 NBA • 🏒 NHL • ⚾ MLB • 🏎️ F1
 
+## First Run (Onboarding)
+
+When no `config.json` exists, running the setup script launches an interactive wizard:
+
+```bash
+python3 scripts/setup.py
+```
+
+**The wizard asks:**
+1. 📺 **Which sports?** — Pick from Soccer, NFL, NBA, NHL, MLB, F1
+2. 🏆 **Which teams?** — Choose from popular teams or search for any team
+3. 🔔 **Alert style?** — Live scores, final only, or daily digest
+4. ⏰ **Game-day reminders?** — Get a heads-up 30 mins before kick-off
+5. 🌙 **Quiet hours?** — Pause alerts while you sleep
+
+After setup, your `config.json` is ready and you can start tracking!
+
+**Re-run setup anytime:**
+```bash
+python3 scripts/setup.py --force  # Overwrites existing config
+```
+
 ## Quick Start
 
 ```bash
-# Setup
-cp config.example.json config.json
-python3 scripts/setup.py  # Interactive setup
+# First time? Just run setup!
+python3 scripts/setup.py  # Interactive wizard
 
 # Find team IDs (any sport)
 python3 scripts/setup.py find "Lakers" basketball
