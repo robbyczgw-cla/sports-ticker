@@ -283,6 +283,145 @@ def format_match(event: dict, include_events: bool = True, sport: str = "soccer"
     
     return "\n".join(lines)
 
+def get_fixtures_for_date(date_str: str, sport: str = "soccer", league: str = "eng.1") -> list:
+    """Get fixtures for a specific date (YYYYMMDD format).
+    
+    Returns list of events for that date.
+    """
+    try:
+        data = api_request(f"{sport}/{league}/scoreboard?dates={date_str}")
+        return data.get("events", [])
+    except Exception:
+        return []
+
+def get_team_fixtures(team_id: str, days: int = 30, sport: str = "soccer", 
+                      leagues: list = None) -> list:
+    """Get upcoming fixtures for a team across leagues.
+    
+    Args:
+        team_id: ESPN team ID
+        days: Number of days to look ahead (default 30)
+        sport: Sport type
+        leagues: List of leagues to check (defaults based on sport)
+    
+    Returns:
+        List of fixture dicts with date, opponent, competition, venue, event_id
+    """
+    from datetime import datetime, timedelta, timezone
+    
+    if leagues is None:
+        if sport == "soccer":
+            leagues = ["eng.1", "esp.1", "ger.1", "ita.1", "fra.1", 
+                      "uefa.champions", "uefa.europa"]
+        elif sport == "football":
+            leagues = ["nfl"]
+        elif sport == "basketball":
+            leagues = ["nba"]
+        elif sport == "hockey":
+            leagues = ["nhl"]
+        elif sport == "baseball":
+            leagues = ["mlb"]
+        elif sport == "racing":
+            leagues = ["f1"]
+        else:
+            leagues = []
+    
+    fixtures = []
+    team_id_str = str(team_id)
+    now = datetime.now(timezone.utc)
+    
+    # Check each day for the next N days
+    checked_dates = set()
+    for day_offset in range(days + 1):  # Include today
+        date = now + timedelta(days=day_offset)
+        date_str = date.strftime("%Y%m%d")
+        
+        for league in leagues:
+            cache_key = f"{date_str}_{league}"
+            if cache_key in checked_dates:
+                continue
+            checked_dates.add(cache_key)
+            
+            events = get_fixtures_for_date(date_str, sport, league)
+            for event in events:
+                # Check if this team is in the match
+                for comp in event.get("competitions", []):
+                    competitors = comp.get("competitors", [])
+                    team_in_match = False
+                    home_team = away_team = None
+                    
+                    for c in competitors:
+                        team = c.get("team", {})
+                        if c.get("homeAway") == "home":
+                            home_team = team
+                        else:
+                            away_team = team
+                        if str(team.get("id")) == team_id_str:
+                            team_in_match = True
+                    
+                    if team_in_match and home_team and away_team:
+                        # Determine opponent
+                        if str(home_team.get("id")) == team_id_str:
+                            opponent = away_team
+                            is_home = True
+                        else:
+                            opponent = home_team
+                            is_home = False
+                        
+                        sport_leagues = LEAGUES.get(sport, {})
+                        fixtures.append({
+                            "event_id": event.get("id"),
+                            "date": event.get("date"),
+                            "date_str": event.get("date", "")[:10],
+                            "opponent": opponent.get("displayName"),
+                            "opponent_short": opponent.get("shortDisplayName", opponent.get("displayName")),
+                            "opponent_id": opponent.get("id"),
+                            "is_home": is_home,
+                            "competition": sport_leagues.get(league, league),
+                            "league": league,
+                            "venue": comp.get("venue", {}).get("fullName", "TBD"),
+                            "sport": sport,
+                            "status": event.get("status", {}).get("type", {}).get("name", "scheduled")
+                        })
+    
+    # Sort by date and remove duplicates (same event in multiple leagues)
+    seen_ids = set()
+    unique_fixtures = []
+    for f in sorted(fixtures, key=lambda x: x["date"]):
+        if f["event_id"] not in seen_ids:
+            seen_ids.add(f["event_id"])
+            unique_fixtures.append(f)
+    
+    return unique_fixtures
+
+def format_fixture(fixture: dict, include_venue: bool = True) -> str:
+    """Format a fixture for display."""
+    from datetime import datetime, timezone
+    
+    date_str = fixture.get("date", "")
+    opponent = fixture.get("opponent_short", fixture.get("opponent", "?"))
+    comp = fixture.get("competition", "")
+    is_home = fixture.get("is_home", True)
+    venue = fixture.get("venue", "")
+    
+    # Parse date
+    try:
+        dt = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+        date_fmt = dt.strftime("%a %d %b")
+        time_fmt = dt.strftime("%H:%M")
+    except:
+        date_fmt = date_str[:10]
+        time_fmt = "TBD"
+    
+    # Home/Away indicator
+    location = "vs" if is_home else "@"
+    
+    result = f"📅 {date_fmt} {time_fmt} UTC | {location} {opponent} ({comp})"
+    if include_venue and venue:
+        result += f"\n   📍 {venue}"
+    
+    return result
+
 def list_leagues(sport: str = None):
     """List available leagues by sport."""
     if sport:

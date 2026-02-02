@@ -14,6 +14,8 @@ Built for [OpenClaw](https://openclaw.com) but works standalone too.
 - ⏸️ **Period updates** — Halftime, quarters, intermissions
 - 🏁 **Final results** with WIN/LOSS/DRAW
 - 📊 **Multi-team support** — track as many teams as you want
+- 📅 **Schedule/Fixtures** — view upcoming matches for next 30 days (NEW in v3!)
+- 🤖 **Auto-cron generation** — never miss a match, set up alerts automatically (NEW in v3!)
 - 🔄 **Auto-scheduling** — cron jobs for match days (OpenClaw)
 - 💰 **100% FREE** — no API keys, no subscriptions!
 
@@ -169,6 +171,16 @@ python3 scripts/ticker.py league eng.1 soccer
 python3 scripts/ticker.py league nfl football
 python3 scripts/ticker.py league nba basketball
 
+# 📅 View upcoming fixtures (NEW in v3!)
+python3 scripts/schedule.py                      # All teams, 14 days
+python3 scripts/schedule.py --team spurs --days 30
+python3 scripts/schedule.py --json               # JSON output
+
+# 🤖 Auto-generate match crons (NEW in v3!)
+python3 scripts/auto_setup_crons.py --team spurs --days 14
+python3 scripts/auto_setup_crons.py --json       # For OpenClaw cron API
+python3 scripts/auto_setup_crons.py --commands   # CLI commands
+
 # ESPN API commands
 python3 scripts/espn.py leagues           # List all sports/leagues
 python3 scripts/espn.py leagues soccer    # List soccer leagues
@@ -294,9 +306,51 @@ The script only outputs when there are new events (goals, cards, etc.), making i
 |--------|---------|
 | `ticker.py` | Show current status of your teams |
 | `live_monitor.py` | Check for live updates (for cron) |
+| `schedule.py` | 📅 View upcoming fixtures (v3) |
+| `auto_setup_crons.py` | 🤖 Generate match crons (v3) |
 | `espn.py` | Direct ESPN API access |
 | `setup.py` | Interactive setup wizard |
 | `config.py` | Configuration management |
+
+## 📅 Schedule & Auto-Crons (v3 Feature)
+
+### The Problem (v2)
+The old scoreboard-only approach meant:
+- Only TODAY's matches were visible
+- If your daily cron didn't run, you'd miss matches
+- No advance notice of upcoming fixtures
+
+### The Solution (v3)
+**Schedule API** scans future dates to find your team's fixtures:
+
+```bash
+# See what's coming up
+python3 scripts/schedule.py --team spurs --days 30
+
+# Output:
+# 🐓 Tottenham Hotspur - Upcoming Fixtures
+# 📅 Sat 07 Feb 12:30 UTC | @ Man United (Premier League)
+#    📍 Old Trafford
+# 📅 Tue 10 Feb 19:30 UTC | vs Newcastle (Premier League)
+#    📍 Tottenham Hotspur Stadium
+```
+
+**Auto-Cron Generator** creates match-day cron jobs:
+
+```bash
+python3 scripts/auto_setup_crons.py --team spurs --days 14
+
+# Generates:
+# ✅ spurs-reminder-2026-02-07 (30 mins before kickoff)
+# ✅ spurs-ticker-start-2026-02-07 (starts monitoring)
+# ⏸️ spurs-ticker-2026-02-07 (every 2 mins during match)
+```
+
+### Workflow
+1. Run `schedule.py` weekly to see upcoming fixtures
+2. Run `auto_setup_crons.py --json` to generate cron configs
+3. Feed the JSON to OpenClaw cron API
+4. Never miss a match again! 🎉
 
 ## 🌐 ESPN API Reference
 

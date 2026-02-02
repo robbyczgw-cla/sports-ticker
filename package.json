@@ -1,6 +1,6 @@
 {
   "name": "@openclaw/sports-ticker",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "Live sports alerts with FREE ESPN API. Track soccer, football, basketball, hockey, baseball, F1 and more with real-time scoring, key events, and multi-team support. No API keys required!",
   "keywords": [
     "openclaw",
