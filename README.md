@@ -11,7 +11,7 @@ Built for [OpenClaw](https://openclaw.com) but works standalone too.
 - 🎯 **Multi-sport support** — Soccer, NFL, NBA, NHL, MLB, F1, and more!
 - ⚽ **Live scoring alerts** with player names and times
 - 🟥 **Key events** — cards, touchdowns, home runs, goals
-- ⏸️ **Period updates** — Halftime, quarters, intermissions
+- ⏸ **Period updates** — Halftime, quarters, intermissions
 - 🏁 **Final results** with WIN/LOSS/DRAW
 - 📊 **Multi-team support** — track as many teams as you want
 - 📅 **Schedule/Fixtures** — view upcoming matches for next 30 days (NEW in v3!)
@@ -48,7 +48,7 @@ This skill uses ESPN's public API which provides:
 **⚾ Baseball**
 - MLB (`mlb`)
 
-**🏎️ Racing**
+**🏎 Racing**
 - Formula 1 (`f1`)
 
 ## 🚀 Quick Start
@@ -64,7 +64,7 @@ git clone https://github.com/your-repo/sports-ticker
 cd sports-ticker
 ```
 
-### 2. Run the Setup Wizard 🧙‍♂️
+### 2. Run the Setup Wizard 🧙♂
 
 First time? The interactive wizard makes setup a breeze!
 
@@ -83,7 +83,7 @@ python3 scripts/setup.py
 ```
 ╔═══════════════════════════════════════════════════════╗
 ║   🏆  SPORTS TICKER  🏆                               ║
-║   ⚽ 🏈 🏀 🏒 ⚾ 🏎️                                    ║
+║   ⚽ 🏈 🏀 🏒 ⚾ 🏎                                    ║
 ║   Never miss a goal, touchdown, or checkered flag!   ║
 ╚═══════════════════════════════════════════════════════╝
 ```
@@ -344,7 +344,7 @@ python3 scripts/auto_setup_crons.py --team spurs --days 14
 # Outputs JSON configs for:
 # ✅ spurs-reminder-2026-02-07 (30 mins before kickoff)
 # ✅ spurs-ticker-start-2026-02-07 (starts monitoring)
-# ⏸️ spurs-ticker-2026-02-07 (every 2 mins during match)
+# ⏸ spurs-ticker-2026-02-07 (every 2 mins during match)
 ```
 
 > **Note (v3.0.5):** The script outputs JSON configurations instead of CLI commands. The agent processes these JSON configs and creates crons via the OpenClaw cron tool.
@@ -392,13 +392,13 @@ MIT — use it however you want!
 - [Interactive API Explorer](https://zudoku.dev/demo?api-url=https://raw.githubusercontent.com/zuplo/espn-openapi/refs/heads/main/espn_openapi_soccer_league_path.yaml) — try endpoints in browser
 - [Zuplo Guide](https://zuplo.com/learning-center/espn-hidden-api-guide) — overview & alternatives
 
-> ⚠️ **Note:** ESPN's API is unofficial/undocumented. It's stable and widely used, but could change without notice. The skill handles errors gracefully.
+> ⚠ **Note:** ESPN's API is unofficial/undocumented. It's stable and widely used, but could change without notice. The skill handles errors gracefully.
 
 ## 🙏 Credits
 
 - ESPN for their awesome (and free!) API
 - pseudo-r, zuplo, and the community for API documentation
-- Built with ❤️ for football fans everywhere
+- Built with ❤ for football fans everywhere
 
 ---
 
