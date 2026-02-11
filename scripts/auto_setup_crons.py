@@ -188,23 +188,18 @@ def format_cron_summary(crons: list) -> str:
 
 
 def output_openclaw_commands(crons: list) -> str:
-    """Generate OpenClaw CLI commands to add these crons."""
+    """Generate cron job JSON configs for the agent to use with the cron tool.
+    
+    NOTE: Does NOT execute any commands. Outputs JSON that the agent
+    should pass to the platform cron tool (cron action=add).
+    """
     if not crons:
-        return "# No crons to add"
+        return json.dumps({"message": "No crons to add"})
     
-    lines = ["# OpenClaw cron commands", "# Run these to set up match alerts\n"]
-    
-    for cron in crons:
-        name = cron["name"]
-        schedule = cron["schedule"]
-        message = cron["message"].replace('"', '\\"').replace('\n', '\\n')
-        enabled = "" if cron.get("enabled") else "--disabled"
-        oneshot = "--oneshot" if cron.get("oneshot") else ""
-        
-        cmd = f'openclaw cron add "{name}" "{schedule}" "{message}" {enabled} {oneshot}'.strip()
-        lines.append(cmd)
-    
-    return "\n".join(lines)
+    return json.dumps({
+        "instructions": "Use the cron tool (action=add) to create these jobs. Do NOT use subprocess or CLI.",
+        "crons": crons
+    }, indent=2)
 
 
 def main():
