@@ -80,6 +80,10 @@ FOOTBALL_LEAGUES = LEAGUES["soccer"]
 
 def api_request(endpoint: str) -> dict:
     """Make request to ESPN API (no auth needed!)."""
+    import re
+    # Validate endpoint contains only safe characters (alphanumeric, slashes, dots, hyphens, query params)
+    if not re.match(r'^[a-zA-Z0-9/_.\-?&=]+$', endpoint):
+        raise ValueError(f"Invalid endpoint: {endpoint}")
     url = f"{BASE_URL}/{endpoint}"
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
     return json.loads(urllib.request.urlopen(req, timeout=15).read())
