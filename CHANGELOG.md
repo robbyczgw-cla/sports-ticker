@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.0.6] - 2026-03-03
+
+### Changed
+- Added ESPN endpoint validation and synchronized security/docs updates.
+
+
 ## [3.0.5] - 2026-02-11
 
 ### Changed
