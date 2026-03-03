@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.0.7] - 2026-03-03
+
+### Fixed
+- `find_team_match()` now filters by today's UTC date (`today_only=True` default) — prevents matches from future weeks from being reported as "today"
+
 ## [3.0.6] - 2026-03-03
 
 ### Changed

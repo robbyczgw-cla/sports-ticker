@@ -146,15 +146,26 @@ def search_team(team_name: str, sport: str = "soccer", leagues: list = None) -> 
     
     return results
 
-def find_team_match(team_id: str, leagues: list = None, sport: str = "soccer") -> Optional[dict]:
-    """Find a match for a specific team."""
+def find_team_match(team_id: str, leagues: list = None, sport: str = "soccer", today_only: bool = True) -> Optional[dict]:
+    """Find a match for a specific team.
+    
+    If today_only=True (default), only returns matches scheduled for today (UTC).
+    """
+    from datetime import datetime, timezone
     if leagues is None:
         leagues = ["eng.1", "uefa.champions"]
+    
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
     for league in leagues:
         try:
             data = get_scoreboard(sport, league)
             for event in data.get("events", []):
+                # Check date if today_only
+                if today_only:
+                    event_date = event.get("date", "")[:10]  # "2026-03-10T..."[:10] = "2026-03-10"
+                    if event_date != today_str:
+                        continue
                 for comp in event.get("competitions", []):
                     for competitor in comp.get("competitors", []):
                         if str(competitor.get("team", {}).get("id")) == str(team_id):
