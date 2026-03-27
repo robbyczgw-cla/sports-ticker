@@ -13,13 +13,101 @@ Run via cron during match windows. Only outputs when there are new events.
 
 import json
 import sys
+import os
+import urllib.request
+import urllib.parse
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from espn import find_team_match, get_match_events, FOOTBALL_LEAGUES
 from config import get_teams, get_alert_settings
+from cache import write_to_cache, read_from_cache, format_cached_result
 
 STATE_FILE = Path(__file__).parent.parent / ".live_state.json"
+
+
+def _web_search_live(team_name: str, team_key: str) -> list:
+    """Search for live score info for a team without ESPN ID.
+    
+    Returns a list of alert strings (may be empty if nothing found or no API key).
+    Writes result to score cache when something is found.
+    """
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    queries = [
+        f"{team_name} live score today",
+        f"{team_name} Ergebnis heute live",
+    ]
+
+    def _try_brave(query: str) -> str:
+        brave_key = os.environ.get("BRAVE_SEARCH_API_KEY", "")
+        if not brave_key:
+            return ""
+        try:
+            params = urllib.parse.urlencode({"q": query, "count": 3})
+            req = urllib.request.Request(
+                f"https://api.search.brave.com/res/v1/web/search?{params}",
+                headers={"Accept": "application/json", "X-Subscription-Token": brave_key},
+            )
+            data = json.loads(urllib.request.urlopen(req, timeout=10).read())
+            snippets = []
+            for r in data.get("web", {}).get("results", [])[:3]:
+                snippet = r.get("description", "")
+                title = r.get("title", "")
+                if snippet:
+                    snippets.append(f"{title}: {snippet[:120]}")
+            return "\n".join(snippets)
+        except Exception:
+            return ""
+
+    def _try_serper(query: str) -> str:
+        # Load key from env or web-search-plus .env
+        serper_key = os.environ.get("SERPER_API_KEY", "")
+        if not serper_key:
+            env_paths = [
+                Path(__file__).parent.parent.parent / "web-search-plus" / ".env",
+                Path(os.environ.get("HOME", "/root")) / "clawd/skills/web-search-plus/.env",
+            ]
+            for ep in env_paths:
+                if ep.exists():
+                    for line in ep.read_text().splitlines():
+                        if "SERPER_API_KEY" in line and "=" in line:
+                            serper_key = line.split("=", 1)[-1].strip().strip("'\"")
+                            break
+        if not serper_key:
+            return ""
+        try:
+            import json as _json
+            payload = _json.dumps({"q": query, "num": 3}).encode()
+            req = urllib.request.Request(
+                "https://google.serper.dev/search",
+                data=payload,
+                headers={"X-API-KEY": serper_key, "Content-Type": "application/json"},
+            )
+            data = _json.loads(urllib.request.urlopen(req, timeout=10).read())
+            snippets = []
+            for r in data.get("organic", [])[:3]:
+                snippet = r.get("snippet", "")
+                title = r.get("title", "")
+                if snippet:
+                    snippets.append(f"{title}: {snippet[:120]}")
+            return "\n".join(snippets)
+        except Exception:
+            return ""
+
+    alerts = []
+    for query in queries:
+        result = _try_brave(query) or _try_serper(query)
+        if result:
+            # Check if result changed from cache
+            cached = read_from_cache(team_key)
+            cached_result = cached.get("last_result", "") if cached else ""
+            if result != cached_result:
+                write_to_cache(team_key, result, source="web_search")
+                alerts.append(f"🔍 **{team_name}** (web)\n{result}")
+            break  # Found something — stop trying queries
+
+    return alerts
 
 def load_state() -> dict:
     if STATE_FILE.exists():
@@ -38,7 +126,10 @@ def check_team(team: dict, state: dict, alerts_config: dict) -> tuple[list, dict
     sport = team.get("sport", "soccer")  # Default to soccer for backward compatibility
     
     if not espn_id:
-        return [], state  # Skip teams without ESPN ID
+        # No ESPN ID — fall back to web search for live score
+        team_key = team.get("short_name", team_name)
+        web_alerts = _web_search_live(team_name, team_key)
+        return web_alerts, state
     
     leagues = team.get("espn_leagues", ["eng.1", "uefa.champions"])
     match = find_team_match(espn_id, leagues, sport)
@@ -195,7 +286,11 @@ def check_team(team: dict, state: dict, alerts_config: dict) -> tuple[list, dict
                 result = "DRAW"
             
             final_text = "FULL TIME" if sport == "soccer" else "FINAL"
-            alerts.append(f"🏁 **{final_text} - {result}** {result_emoji} {team_emoji}\n{home_team} {home_score}-{away_score} {away_team}")
+            score_str = f"{home_team} {home_score}-{away_score} {away_team}"
+            alerts.append(f"🏁 **{final_text} - {result}** {result_emoji} {team_emoji}\n{score_str}")
+            # Persist the final score to cache so ticker.py can show it later
+            team_key = team.get("short_name", team_name)
+            write_to_cache(team_key, score_str, source="espn")
     
     # Update state
     state[event_id] = {
@@ -215,9 +310,6 @@ def check_all_teams() -> list:
     alerts_config = get_alert_settings()
     
     for team in teams:
-        if not team.get("espn_id"):
-            continue
-        
         alerts, state = check_team(team, state, alerts_config)
         all_alerts.extend(alerts)
     

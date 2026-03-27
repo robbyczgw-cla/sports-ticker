@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.2.0] - 2026-03-27
+
+### Changed
+- v3.2.0 — Phase 1 stability: removed hardcoded API key, added web search fallback for non-ESPN teams, added score caching
+- **ticker.py:** Removed hardcoded Brave API key fallback — now uses env var only; if key absent, skips Brave and tries Serper directly
+- **live_monitor.py:** Teams without `espn_id` are no longer skipped — they are checked via web search (Brave/Serper) with change-detection against cache
+- **cache.py (new):** Score cache module — reads/writes `.score_cache.json`; stores last_result, match_date, source, cached_at per team
+- **ticker.py + live_monitor.py:** Write to cache on result found; show cached "Last result: … (DD.MM.)" when no live data and no API key
+
 ## [3.0.7] - 2026-03-03
 
 ### Fixed

@@ -15,6 +15,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from espn import find_team_match, format_match, get_scoreboard, FOOTBALL_LEAGUES
 from config import get_teams
+from cache import write_to_cache, format_cached_result
 
 
 def _load_key(env_var: str, env_file_key: str) -> str:
@@ -34,13 +35,18 @@ def _load_key(env_var: str, env_file_key: str) -> str:
     return key
 
 
-def web_search_match(team_name: str) -> str:
-    """Fallback: search for today's match/result. Brave first, Serper fallback."""
+def web_search_match(team_name: str, team_key: str = "") -> str:
+    """Fallback: search for today's match/result. Brave first, Serper fallback.
+    
+    If a result is found, it is written to the score cache under `team_key`
+    (defaults to `team_name` when not provided).
+    """
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     query = f"{team_name} match result {today}"
+    _cache_key = team_key or team_name
 
-    # 1. Try Brave Search (OpenClaw default)
-    brave_key = os.environ.get("BRAVE_SEARCH_API_KEY", "REDACTED_BRAVE_KEY")
+    # 1. Try Brave Search (OpenClaw default) — only if key is set
+    brave_key = os.environ.get("BRAVE_SEARCH_API_KEY", "")
     if brave_key:
         try:
             params = urllib.parse.urlencode({"q": query, "count": 3})
@@ -56,7 +62,9 @@ def web_search_match(team_name: str) -> str:
                 if snippet:
                     snippets.append(f"• {title}: {snippet[:120]}")
             if snippets:
-                return "🔍 Web:\n" + "\n".join(snippets)
+                result_text = "🔍 Web:\n" + "\n".join(snippets)
+                write_to_cache(_cache_key, snippets[0], source="brave_search")
+                return result_text
         except Exception:
             pass  # Fall through to Serper
 
@@ -78,9 +86,16 @@ def web_search_match(team_name: str) -> str:
                 if snippet:
                     snippets.append(f"• {title}: {snippet[:120]}")
             if snippets:
-                return "🔍 Web:\n" + "\n".join(snippets)
+                result_text = "🔍 Web:\n" + "\n".join(snippets)
+                write_to_cache(_cache_key, snippets[0], source="serper_search")
+                return result_text
         except Exception as e:
             return f"🔍 Web search failed: {e}"
+
+    # 3. No API key — fall back to cache
+    cached = format_cached_result(_cache_key)
+    if cached:
+        return f"📦 {cached}"
 
     return "🔍 No search API key — web fallback unavailable."
 
@@ -93,20 +108,35 @@ def team_ticker(team: dict) -> str:
     espn_id = team.get("espn_id")
     leagues = team.get("espn_leagues", ["eng.1"])
     sport = team.get("sport", "soccer")
+    team_key = team.get("short_name", name)
 
     lines.append(f"{emoji} **{name}**\n")
 
     if espn_id:
         match = find_team_match(espn_id, leagues, sport)
         if match:
-            lines.append(format_match(match["event"], include_events=True,
-                                      sport=sport, league=match["league"]))
+            result = format_match(match["event"], include_events=True,
+                                  sport=sport, league=match["league"])
+            lines.append(result)
+            # Cache the formatted result as well
+            write_to_cache(team_key, result, source="espn")
         else:
-            # ESPN found nothing — web search fallback
-            lines.append(web_search_match(name))
+            # ESPN found nothing — web search fallback, then cache fallback
+            web_result = web_search_match(name, team_key)
+            lines.append(web_result)
+            # If web search found nothing and cache exists, show cached result
+            if "unavailable" in web_result or "failed" in web_result:
+                cached = format_cached_result(team_key)
+                if cached:
+                    lines.append(f"\n📦 {cached}")
     else:
-        # No ESPN ID — web search only
-        lines.append(web_search_match(name))
+        # No ESPN ID — web search fallback, with cache backup
+        web_result = web_search_match(name, team_key)
+        lines.append(web_result)
+        if "unavailable" in web_result or "failed" in web_result:
+            cached = format_cached_result(team_key)
+            if cached:
+                lines.append(f"\n📦 {cached}")
 
     return "\n".join(lines)
 
