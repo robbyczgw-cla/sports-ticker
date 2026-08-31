@@ -6,6 +6,7 @@
 - Docs now describe OpenClaw 2.0 automation setup: primary command `openclaw automations` (the old `openclaw cron` remains as an alias), wake flag `--wake` (no `--wake-mode` flag).
 - Added note: exec in automations requires an approval grant in 2.0; without a grant the automation fails silently. Approvals run through the Control UI.
 - `auto_setup_crons.py`: `--commands` help text now says what the flag does (JSON plus agent instructions), and the JSON output tells the agent to create automations instead of referring to the removed "cron tool".
+- Removed `package.json`. It declared an npm package that was never published and had no `main`, dependencies, or scripts. ClawHub CLI 0.22+ refuses to publish any folder containing a `package.json` as a skill.
 
 ### Fixed
 - Corrected the 3.0.5 entry below: `--commands` was never removed from `auto_setup_crons.py`. It still exists and outputs JSON.
